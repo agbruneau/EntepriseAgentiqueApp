@@ -1,0 +1,12 @@
+# Auto Claude data directory
+.auto-claude/
+
+# Claude/Cursor local settings
+.claude/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Output directory
+output/
