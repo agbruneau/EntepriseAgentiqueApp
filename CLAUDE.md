@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is **"L'Entreprise Agentique"** (The Agentic Enterprise), a French-language academic/professional monograph exploring enterprise transformation toward agentic architectures. The project consists of **81 chapters across 5 volumes** covering theoretical foundations, technical implementations, and strategic implications.
 
-**This is a publishing project, not a software codebase.** Content is authored in Word (.docx) format with markdown for navigation and structure.
+**This is a publishing project, not a software codebase.** Content is authored in Markdown (.md) format. The PDF generation pipeline converts Markdown → Typst → PDF.
 
 ## Repository Structure
 
@@ -16,44 +16,139 @@ Volume_II_Infrastructure_Agentique/          (15 chapters - Confluent + Google C
 Volume_III_Apache_Kafka_Guide_Architecte/    (12 chapters - Kafka deep-dive)
 Volume_IV_Apache_Iceberg_Lakehouse/          (16 + 2 chapters - Data Lakehouse)
 Volume_V_Developpeur_Renaissance/            (10 chapters - Human capital & skills)
+pdf-generator/                               (PDF generation toolchain)
 ```
 
 Each volume contains:
 - `README.md` - Volume overview and navigation
-- `Partie_*/Chapitre_*/` - Individual chapter directories with .docx files
+- `Partie_*/Chapitre_*/` - Individual chapter directories with .md files
+- `Introduction_*/` - Volume introduction directory
 
 **Root-level files:**
-- `INSTRUCTION.MD` - Consolidated editorial guidelines for all volumes (in French)
+- `INSTRUCTION.MD` - Consolidated editorial guidelines for all volumes (in French, authoritative source)
 - `CLAUDE.md` - Claude Code configuration (this file, in English)
+- `TOC.md` - Full table of contents with section-level detail
+- `README.md` - Project overview with chapter navigation links
+
+## PDF Generation Commands
+
+The `pdf-generator/` directory contains a Pandoc + Typst pipeline. Prerequisites: Python 3.10+, Pandoc 3.0+, Typst 0.11+, and `pip install pypdf pyyaml`.
+
+```bash
+# Generate a single volume PDF
+python pdf-generator/scripts/generate.py --volume IV
+
+# Generate all volumes sequentially
+python pdf-generator/scripts/generate.py --volume all
+
+# Generate all volumes in parallel
+python pdf-generator/scripts/generate.py --volume all --parallel
+
+# Generate consolidated monograph (all 5 volumes merged)
+python pdf-generator/scripts/generate.py --consolidated
+
+# Validate source files before generation
+python pdf-generator/scripts/validate.py --volume all
+python pdf-generator/scripts/validate.py --volume III --verbose
+```
+
+Pipeline: Markdown files → concatenated per volume → Pandoc converts to Typst (with Lua filters for callouts, figures, cross-refs) → Typst compiles to PDF. Output goes to `pdf-generator/output/volumes/` and `pdf-generator/output/consolidated/`.
+
+## File Naming Conventions
+
+**Markdown chapter files**: `Chapitre_[VOL]_[numéro].md` (e.g., `Chapitre_I_1.md`, `Chapitre_IV_16.md`)
+
+- Volume prefix is Roman numeral (I, II, III, IV, V)
+- Underscore separates volume number from chapter number
+- No textual description in filename
+- Introductions: `Introduction.md` in each volume
+- Annexes (Volume IV): `Annexe_IV_A.md`, `Annexe_IV_B.md`
+- Directories retain their full descriptive names
 
 ## Editorial Standards
 
 ### Language & Terminology
 
-- **Quebec professional French** (infonuagique, courriel, etc.)
-- **60% theory / 40% practice** balance for Volume I
+- **Quebec professional French** (infonuagique, courriel, etc.) — avoid untranslated anglicisms except recognized technical terms
+- Prefer **fluid prose** over bullet lists
+- First acronym occurrence: full form followed by acronym in parentheses; subsequent uses: acronym only
 - Target audience: Enterprise architects, CTOs, transformation consultants
+
+### Per-Volume Style & Balance
+
+| Volume | Tone | Theory/Practice | Structure Notes |
+|--------|------|-----------------|-----------------|
+| I | Academic-professional | 60/40 | Strategic perspective for decision-makers |
+| II | Technical-practical | 40/60 | Implementation-oriented for engineering teams |
+| III | Technical-architectural | 50/50 | Architect's perspective: trade-offs, justifications |
+| IV | Technical-architectural | 45/55 | Data engineering: performance, costs, governance |
+| V | Philosophical-professional | 70/30 | Humanist, reflective, inspiring tone |
 
 ### Mandatory Terminology (Lexique Obligatoire)
 
+**Core Concepts:**
+
 | Term | Usage |
 |------|-------|
-| Entreprise agentique | NOT "entreprise IA" |
+| Entreprise agentique | NOT "entreprise IA" or "entreprise intelligente" |
 | Agents cognitifs | NOT "agents IA" alone |
 | Maillage agentique / Agentic Mesh | Multi-agent orchestration |
+| Système nerveux numérique | Event infrastructure metaphor |
 | Interopérabilité Cognitivo-Adaptative (ICA) | AI-enhanced semantic understanding |
+
+**Architecture & Infrastructure:**
+
+| Term | Usage |
+|------|-------|
 | Architecture réactive | Event-driven architecture |
-| Backbone événementiel | Event backbone |
+| Backbone événementiel | Event backbone infrastructure |
+| Lakehouse / Data Lakehouse | Unified architecture (NOT "data lake" alone) |
+| Contrats de données | Contractual schemas between systems |
+
+**Governance & Operations:**
+
+| Term | Usage |
+|------|-------|
+| Constitution agentique | Agent governance rules |
 | AgentOps | Agent operations discipline |
 | Architecte d'intentions | Intention Architect role |
 | Berger d'intention | Intention Shepherd role |
+| Jumeau Numérique Cognitif (JNC) | AI representation of an entity |
+
+**Patterns & Protocols:**
+
+| Term | Usage |
+|------|-------|
+| Saga chorégraphiée | Distributed transactions via events |
+| CQRS | Command/query separation |
+| Event Sourcing | Event-based persistence |
+| Outbox transactionnel | Publication guarantee pattern |
+| A2A (Agent-to-Agent) | Inter-agent communication protocol |
+| MCP (Model Context Protocol) | Model context protocol |
+| AsyncAPI | Async API specification |
+
+**Volume V Specific:**
+
+| Term | Usage |
+|------|-------|
+| Développeur Renaissance | Modern polymath profile |
+| Les Cinq Piliers | Curiosité appliquée, Pensée systémique, Communication précise, Ownership, Interdisciplinarité |
+| Spécification-Driven Development (SDD) | Development methodology |
 
 ### Chapter Format
 
-- **Target length**: 5,000 words per chapter
-- **Structure**: Introduction (10%) → Development (80%) → Conclusion (10%)
-- **Output format**: Word (.docx)
+- **Target length**: 10,000 words per chapter
+- **Structure**: Introduction (10-15%) → Development (75-80%) → Conclusion/Transition (10%)
+- **Output format**: Markdown (.md)
 - **Each chapter ends with**: Structured "Résumé" section
+- **Each chapter must be comprehensible independently** while maintaining cross-chapter coherence
+
+### Citation Convention
+
+- Prioritize 2023-2026 technical sources
+- Reference leaders: Confluent, Apache, Google Cloud, Anthropic, Dremio, Microsoft
+- Format: Name (Year) or "selon [Organization, Year]"
+- Prefer primary sources (official documentation, research papers)
 
 ---
 
@@ -81,6 +176,7 @@ All chapter markdown files follow this standardized structure for PDF consolidat
 - Volume II: `II.N`
 - Volume III: `III.N`
 - Volume IV: `IV.N`
+- Volume V: `V.N`
 
 ### Title Hierarchy
 
@@ -149,13 +245,23 @@ All chapter markdown files follow this standardized structure for PDF consolidat
 > [Performance metrics and benchmarks]
 ```
 
-### Table Format (Pipe-table Markdown)
+**Volume V callouts:**
 
 ```markdown
-| Critère | Option A | Option B | Recommandation |
-|---------|----------|----------|----------------|
-| Performance | Élevée | Moyenne | A |
-| Coût | Élevé | Faible | B |
+> **Figure historique : [Nom]**
+>
+> *Époque* : [Period]
+> *Domaines* : [Disciplines mastered]
+> *Contribution* : [Major contribution]
+> *Leçon pour aujourd'hui* : [Applicable teaching]
+
+> **Réflexion**
+>
+> [Question inviting professional introspection]
+
+> **Manifeste**
+>
+> [Guiding principle of the Développeur Renaissance]
 ```
 
 ### Chapter End Structure
@@ -193,46 +299,22 @@ Ce chapitre a exploré [theme]. Points essentiels :
 *Fin du Volume [N] — [Volume Title]*
 ```
 
----
-
-## Special Callouts
-
-Use these blockquote formats:
-- `> **Définition formelle**` - For key concept definitions
-- `> **Perspective stratégique**` - For business implications
-- `> **Exemple concret**` - For practical illustrations
-
-### Citation Convention
-
-- Prioritize 2023-2026 technical sources
-- Reference leaders: Confluent, Apache, Google Cloud, Anthropic
-- Format: Name (Year) or "selon [Organization, Year]"
-
 ## Technology Stack (Subject Matter)
 
 The monograph covers these technologies:
-- **Apache Kafka / Confluent Platform** - Event backbone
-- **Google Cloud Vertex AI** - Cognitive layer
-- **Apache Iceberg** - Data Lakehouse
-- **Schema Registry** - Data contracts
+- **Apache Kafka / Confluent Platform** - Event backbone (Kafka Streams, ksqlDB, Kafka Connect, Schema Registry)
+- **Google Cloud Vertex AI** - Cognitive layer (Agent Builder, Model Garden, RAG)
+- **Apache Iceberg** - Data Lakehouse (with Dremio, Trino, Apache Spark as query engines)
+- **Microsoft Fabric / OneLake / Power BI Direct Lake** - Data platform integration
 - **AsyncAPI** - Asynchronous protocol specification
 - **A2A, MCP** - Agent interoperability protocols
+- **OpenTelemetry** - Observability standard
 
 ## Cross-Volume References
 
-When writing content, reference related volumes:
-- Volume I → Conceptual foundations
-- Volume II → Technical implementation (Confluent + GCP)
-- Volume III → Kafka architecture details
-- Volume IV → Data lakehouse patterns
-- Volume V → Human skills and development practices
-
-## Claude Code Configuration
-
-This project uses Claude Code with automatic execution enabled:
-
-```bash
-claude --dangerously-skip-permissions
-```
-
-This mode bypasses all permission prompts for autonomous operation.
+When writing content, use these patterns:
+- "comme défini au Volume I..." → Conceptual foundations
+- "voir Volume II pour l'implémentation..." → Technical implementation (Confluent + GCP)
+- "le Volume III approfondit..." → Kafka architecture details
+- "le Volume IV détaille..." → Data lakehouse patterns
+- "le Volume V explore..." → Human skills and development practices
