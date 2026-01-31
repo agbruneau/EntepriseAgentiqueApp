@@ -4,317 +4,181 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is **"L'Entreprise Agentique"** (The Agentic Enterprise), a French-language academic/professional monograph exploring enterprise transformation toward agentic architectures. The project consists of **81 chapters across 5 volumes** covering theoretical foundations, technical implementations, and strategic implications.
+**"L'Entreprise Agentique"** — a French-language monograph (81 chapters, 5 volumes) on enterprise transformation toward agentic architectures. **This is a publishing project, not a software codebase.** Content is Markdown; the PDF pipeline converts Markdown → Typst → PDF.
 
-**This is a publishing project, not a software codebase.** Content is authored in Markdown (.md) format. The PDF generation pipeline converts Markdown → Typst → PDF.
+**Authoritative editorial reference:** `INSTRUCTION.MD` (in French, contains full per-volume directives, complete terminology glossary, and detailed quality checklists).
 
 ## Repository Structure
 
 ```
-Volume_I_Fondations_Entreprise_Agentique/   (28 chapters - Theoretical foundations)
-Volume_II_Infrastructure_Agentique/          (15 chapters - Confluent + Google Cloud)
-Volume_III_Apache_Kafka_Guide_Architecte/    (12 chapters - Kafka deep-dive)
-Volume_IV_Apache_Iceberg_Lakehouse/          (16 + 2 chapters - Data Lakehouse)
-Volume_V_Developpeur_Renaissance/            (10 chapters - Human capital & skills)
-pdf-generator/                               (PDF generation toolchain)
+Volume_I_Fondations_Entreprise_Agentique/   (28 ch. — Theoretical foundations)
+Volume_II_Infrastructure_Agentique/          (15 ch. — Confluent + Google Cloud)
+Volume_III_Apache_Kafka_Guide_Architecte/    (12 ch. — Kafka deep-dive)
+Volume_IV_Apache_Iceberg_Lakehouse/          (16 + 2 ch. — Data Lakehouse)
+Volume_V_Developpeur_Renaissance/            (10 ch. — Human capital & skills)
+pdf-generator/                               (Pandoc + Typst PDF pipeline)
 ```
 
-Each volume contains:
-- `README.md` - Volume overview and navigation
-- `Partie_*/Chapitre_*/` - Individual chapter directories with .md files
-- `Introduction_*/` - Volume introduction directory
+- Each volume: `README.md` + `Introduction_*/` + `Partie_*/Chapitre_*/` with `.md` files
+- Root files: `INSTRUCTION.MD` (editorial rules), `TOC.md` (detailed TOC), `README.md` (navigation)
 
-**Root-level files:**
-- `INSTRUCTION.MD` - Consolidated editorial guidelines for all volumes (in French, authoritative source)
-- `CLAUDE.md` - Claude Code configuration (this file, in English)
-- `TOC.md` - Full table of contents with section-level detail
-- `README.md` - Project overview with chapter navigation links
+## PDF Generation
 
-## PDF Generation Commands
-
-The `pdf-generator/` directory contains a Pandoc + Typst pipeline. Prerequisites: Python 3.10+, Pandoc 3.0+, Typst 0.11+, and `pip install pypdf pyyaml`.
+Prerequisites: Python 3.10+, Pandoc 3.0+, Typst 0.11+, `pip install pypdf pyyaml`
 
 ```bash
-# Generate a single volume PDF
-python pdf-generator/scripts/generate.py --volume IV
-
-# Generate all volumes sequentially
-python pdf-generator/scripts/generate.py --volume all
-
-# Generate all volumes in parallel
-python pdf-generator/scripts/generate.py --volume all --parallel
-
-# Generate consolidated monograph (all 5 volumes merged)
-python pdf-generator/scripts/generate.py --consolidated
-
-# Validate source files before generation
-python pdf-generator/scripts/validate.py --volume all
-python pdf-generator/scripts/validate.py --volume III --verbose
+python pdf-generator/scripts/generate.py --volume IV           # Single volume
+python pdf-generator/scripts/generate.py --volume all          # All sequential
+python pdf-generator/scripts/generate.py --volume all --parallel  # All parallel
+python pdf-generator/scripts/generate.py --consolidated        # Merged monograph
+python pdf-generator/scripts/validate.py --volume all          # Validate sources
 ```
 
-Pipeline: Markdown files → concatenated per volume → Pandoc converts to Typst (with Lua filters for callouts, figures, cross-refs) → Typst compiles to PDF. Output goes to `pdf-generator/output/volumes/` and `pdf-generator/output/consolidated/`.
+Pipeline: `.md` files → concatenated → Pandoc + Lua filters (`callouts.lua`, `figures.lua`, `cross-refs.lua`) → `.typ` → Typst → PDF. Output: `pdf-generator/output/{volumes,consolidated}/`.
 
-## File Naming Conventions
+## File Naming
 
-**Markdown chapter files**: `Chapitre_[VOL]_[numéro].md` (e.g., `Chapitre_I_1.md`, `Chapitre_IV_16.md`)
-
-- Volume prefix is Roman numeral (I, II, III, IV, V)
-- Underscore separates volume number from chapter number
-- No textual description in filename
-- Introductions: `Introduction.md` in each volume
-- Annexes (Volume IV): `Annexe_IV_A.md`, `Annexe_IV_B.md`
-- Directories retain their full descriptive names
+- Chapters: `Chapitre_[VOL]_[N].md` (e.g. `Chapitre_I_1.md`, `Chapitre_IV_16.md`) — no description in filename
+- Introductions: `Introduction.md` per volume
+- Annexes (Vol. IV): `Annexe_IV_A.md`, `Annexe_IV_B.md`
+- Directories keep full descriptive names
 
 ## Editorial Standards
 
-### Language & Terminology
+### Language
 
-- **Quebec professional French** (infonuagique, courriel, etc.) — avoid untranslated anglicisms except recognized technical terms
+- **Quebec professional French** (infonuagique, courriel…) — avoid untranslated anglicisms except recognized technical terms
 - Prefer **fluid prose** over bullet lists
-- First acronym occurrence: full form followed by acronym in parentheses; subsequent uses: acronym only
-- Target audience: Enterprise architects, CTOs, transformation consultants
+- First acronym occurrence: full form + (acronym); then acronym only
+- Audience: enterprise architects, CTOs, transformation consultants
 
-### Per-Volume Style & Balance
+### Per-Volume Style
 
-| Volume | Tone | Theory/Practice | Structure Notes |
-|--------|------|-----------------|-----------------|
-| I | Academic-professional | 60/40 | Strategic perspective for decision-makers |
-| II | Technical-practical | 40/60 | Implementation-oriented for engineering teams |
-| III | Technical-architectural | 50/50 | Architect's perspective: trade-offs, justifications |
-| IV | Technical-architectural | 45/55 | Data engineering: performance, costs, governance |
-| V | Philosophical-professional | 70/30 | Humanist, reflective, inspiring tone |
+| Vol. | Tone | Theory/Practice | Focus |
+|------|------|-----------------|-------|
+| I | Academic-professional | 60/40 | Strategic perspective, decision-makers |
+| II | Technical-practical | 40/60 | Implementation, engineering teams |
+| III | Technical-architectural | 50/50 | Architect trade-offs, justifications |
+| IV | Technical-architectural | 45/55 | Data engineering, performance, costs |
+| V | Philosophical-professional | 70/30 | Humanist, reflective, inspiring |
 
 ### Mandatory Terminology (Lexique Obligatoire)
 
-**Core Concepts:**
-
 | Term | Usage |
 |------|-------|
-| Entreprise agentique | NOT "entreprise IA" or "entreprise intelligente" |
+| Entreprise agentique | NOT "entreprise IA" / "entreprise intelligente" |
 | Agents cognitifs | NOT "agents IA" alone |
 | Maillage agentique / Agentic Mesh | Multi-agent orchestration |
 | Système nerveux numérique | Event infrastructure metaphor |
 | Interopérabilité Cognitivo-Adaptative (ICA) | AI-enhanced semantic understanding |
-
-**Architecture & Infrastructure:**
-
-| Term | Usage |
-|------|-------|
 | Architecture réactive | Event-driven architecture |
 | Backbone événementiel | Event backbone infrastructure |
-| Lakehouse / Data Lakehouse | Unified architecture (NOT "data lake" alone) |
+| Lakehouse / Data Lakehouse | NOT "data lake" alone |
 | Contrats de données | Contractual schemas between systems |
-
-**Governance & Operations:**
-
-| Term | Usage |
-|------|-------|
 | Constitution agentique | Agent governance rules |
 | AgentOps | Agent operations discipline |
 | Architecte d'intentions | Intention Architect role |
 | Berger d'intention | Intention Shepherd role |
 | Jumeau Numérique Cognitif (JNC) | AI representation of an entity |
-
-**Patterns & Protocols:**
-
-| Term | Usage |
-|------|-------|
 | Saga chorégraphiée | Distributed transactions via events |
-| CQRS | Command/query separation |
-| Event Sourcing | Event-based persistence |
-| Outbox transactionnel | Publication guarantee pattern |
-| A2A (Agent-to-Agent) | Inter-agent communication protocol |
-| MCP (Model Context Protocol) | Model context protocol |
-| AsyncAPI | Async API specification |
-
-**Volume V Specific:**
-
-| Term | Usage |
-|------|-------|
-| Développeur Renaissance | Modern polymath profile |
-| Les Cinq Piliers | Curiosité appliquée, Pensée systémique, Communication précise, Ownership, Interdisciplinarité |
-| Spécification-Driven Development (SDD) | Development methodology |
+| CQRS / Event Sourcing / Outbox transactionnel | Architectural patterns |
+| A2A / MCP / AsyncAPI | Agent & async interoperability protocols |
+| Développeur Renaissance | Modern polymath profile (Vol. V) |
+| Les Cinq Piliers | Curiosité, Pensée systémique, Communication, Ownership, Interdisciplinarité |
+| Spécification-Driven Development (SDD) | Development methodology (Vol. V) |
 
 ### Chapter Format
 
-- **Target length**: 10,000 words per chapter
-- **Structure**: Introduction (10-15%) → Development (75-80%) → Conclusion/Transition (10%)
-- **Output format**: Markdown (.md)
-- **Each chapter ends with**: Structured "Résumé" section
-- **Each chapter must be comprehensible independently** while maintaining cross-chapter coherence
-
-### Citation Convention
-
-- Prioritize 2023-2026 technical sources
-- Reference leaders: Confluent, Apache, Google Cloud, Anthropic, Dremio, Microsoft
-- Format: Name (Year) or "selon [Organization, Year]"
-- Prefer primary sources (official documentation, research papers)
-
----
+- **10,000 words** target per chapter
+- Structure: Introduction (10-15%) → Development (75-80%) → Conclusion (10%)
+- Each chapter ends with a structured **Résumé** section + Tableau Récapitulatif
+- Each chapter must be **independently comprehensible** while maintaining cross-chapter coherence
+- Citations: 2023-2026 sources preferred; format `Name (Year)` or `"selon [Org, Year]"`; leaders: Confluent, Apache, Google Cloud, Anthropic, Dremio, Microsoft
 
 ## Normalized Markdown Structure
 
-All chapter markdown files follow this standardized structure for PDF consolidation.
+**Section numbering prefixes:** `I.N`, `II.N`, `III.N`, `IV.N`, `V.N`
 
-### Chapter Header (Obligatoire)
+### Chapter Template
 
 ```markdown
-# Chapitre [VOL].[NUM] — [Titre du Chapitre]
+# Chapitre [VOL].[NUM] — [Titre]
 
-> *« Citation inspirante optionnelle »*
+> *« Citation optionnelle »*
 > — Auteur
 
 ---
 
 ## [VOL].[NUM].0 Introduction
+[150-300 mots]
 
-[Paragraphe contextuel 150-300 mots...]
+## [VOL].[NUM].1 [Section principale]
+### [VOL].[NUM].1.1 [Sous-section]
+
+...
+
+## [VOL].[NUM].[N] Conclusion
+[150-200 mots]
+
+## [VOL].[NUM].[N+1] Résumé
+Ce chapitre a exploré [thème]. Points essentiels :
+**[Concept]** : [2-3 phrases]
+
+### Tableau Récapitulatif
+| Concept | Définition | Implication |
+|---------|------------|-------------|
+
+*Chapitre suivant : Chapitre [VOL].[NUM+1] — [Titre]*
 ```
 
-**Volume prefixes:**
-- Volume I: `I.N`
-- Volume II: `II.N`
-- Volume III: `III.N`
-- Volume IV: `IV.N`
-- Volume V: `V.N`
+Last chapter of a volume ends with: `*Fin du Volume [N] — [Titre]*`
 
 ### Title Hierarchy
 
-| Level | Syntax | Usage | Example |
-|-------|--------|-------|---------|
-| H1 `#` | Chapter title only | `# Chapitre I.5 — Écosystème API` |
-| H2 `##` | Main sections | `## I.5.1 L'API comme Interface Stratégique` |
-| H3 `###` | Subsections | `### I.5.1.1 Patterns RESTful` |
-| H4 `####` | Detail points (rare) | Not numbered |
+| Level | Usage | Example |
+|-------|-------|---------|
+| `#` H1 | Chapter title only | `# Chapitre I.5 — Écosystème API` |
+| `##` H2 | Main sections | `## I.5.1 L'API comme Interface Stratégique` |
+| `###` H3 | Subsections | `### I.5.1.1 Patterns RESTful` |
+| `####` H4 | Detail points (rare, unnumbered) | |
 
 ### Callouts (Blockquote Format)
 
-**Universal callouts (all volumes):**
+**Universal (all volumes):** `> **Définition formelle**`, `> **Perspective stratégique**`, `> **Exemple concret**`
 
-```markdown
-> **Définition formelle**
->
-> [Term defined and concise explanation]
+**Technical (Vol. II-IV):** with structured fields `*Contexte/Défi/Solution/Leçon*`
 
-> **Perspective stratégique**
->
-> [Business implications, recommendations]
+| Callout | Volumes | Fields |
+|---------|---------|--------|
+| **Note de terrain** | II-IV | Contexte, Défi, Solution, Leçon |
+| **Décision architecturale** | II-IV | Contexte, Analyse, Décision, Justification |
+| **Anti-patron** | II-IV | Error description + alternative |
+| **Étude de cas : [Nom]** | IV | Secteur, Défi, Solution, Résultats |
+| **Migration : [Titre]** | IV | De, Vers, Stratégie, Résultats |
+| **Performance : [Titre]** | IV | Metrics and benchmarks |
+| **Figure historique : [Nom]** | V | Époque, Domaines, Contribution, Leçon |
+| **Réflexion** | V | Question for introspection |
+| **Manifeste** | V | Guiding principle |
 
-> **Exemple concret**
->
-> [Practical illustration with context]
-```
-
-**Technical callouts (Volumes II-IV):**
-
-```markdown
-> **Note de terrain**
->
-> *Contexte* : [Description]
-> *Défi* : [Problem]
-> *Solution* : [Approach]
-> *Leçon* : [Lesson learned]
-
-> **Décision architecturale**
->
-> *Contexte* : [Situation]
-> *Analyse* : [Options]
-> *Décision* : [Choice]
-> *Justification* : [Reasons]
-
-> **Anti-patron**
->
-> *[Error description]* : [Explanation and alternative]
-
-> **Étude de cas : [Name]**
->
-> *Secteur* : [Industry]
-> *Défi* : [Challenge]
-> *Solution* : [Architecture]
-> *Résultats* : [Metrics]
-
-> **Migration : [Title]**
->
-> *De* : [Source state]
-> *Vers* : [Target state]
-> *Stratégie* : [Approach]
-> *Résultats* : [Outcomes]
-
-> **Performance : [Title]**
->
-> [Performance metrics and benchmarks]
-```
-
-**Volume V callouts:**
-
-```markdown
-> **Figure historique : [Nom]**
->
-> *Époque* : [Period]
-> *Domaines* : [Disciplines mastered]
-> *Contribution* : [Major contribution]
-> *Leçon pour aujourd'hui* : [Applicable teaching]
-
-> **Réflexion**
->
-> [Question inviting professional introspection]
-
-> **Manifeste**
->
-> [Guiding principle of the Développeur Renaissance]
-```
-
-### Chapter End Structure
-
-```markdown
----
-
-## [VOL].[NUM].[N] Conclusion
-
-[Synthesis 150-200 words]
-
----
-
-## [VOL].[NUM].[N+1] Résumé
-
-Ce chapitre a exploré [theme]. Points essentiels :
-
-**[Concept 1]** : [Summary 2-3 sentences]
-
-**[Concept 2]** : [Summary 2-3 sentences]
-
-### Tableau Récapitulatif
-
-| Concept | Définition | Implication |
-|---------|------------|-------------|
-| [Term] | [Definition] | [Application] |
-
----
-
-*Chapitre suivant : Chapitre [VOL].[NUM+1] — [Title]*
-```
-
-**For volume final chapters:**
-```markdown
-*Fin du Volume [N] — [Volume Title]*
-```
+All callouts use blockquote syntax: `> **Label**` followed by `>` content lines.
 
 ## Technology Stack (Subject Matter)
 
-The monograph covers these technologies:
-- **Apache Kafka / Confluent Platform** - Event backbone (Kafka Streams, ksqlDB, Kafka Connect, Schema Registry)
-- **Google Cloud Vertex AI** - Cognitive layer (Agent Builder, Model Garden, RAG)
-- **Apache Iceberg** - Data Lakehouse (with Dremio, Trino, Apache Spark as query engines)
-- **Microsoft Fabric / OneLake / Power BI Direct Lake** - Data platform integration
-- **AsyncAPI** - Asynchronous protocol specification
-- **A2A, MCP** - Agent interoperability protocols
-- **OpenTelemetry** - Observability standard
+- **Apache Kafka / Confluent Platform** — Event backbone (Streams, ksqlDB, Connect, Schema Registry)
+- **Google Cloud Vertex AI** — Cognitive layer (Agent Builder, Model Garden, RAG)
+- **Apache Iceberg** — Data Lakehouse (Dremio, Trino, Spark as query engines)
+- **Microsoft Fabric / OneLake / Power BI Direct Lake** — Data platform integration
+- **A2A, MCP, AsyncAPI** — Agent & async interoperability protocols
+- **OpenTelemetry** — Observability standard
 
 ## Cross-Volume References
 
-When writing content, use these patterns:
-- "comme défini au Volume I..." → Conceptual foundations
-- "voir Volume II pour l'implémentation..." → Technical implementation (Confluent + GCP)
-- "le Volume III approfondit..." → Kafka architecture details
-- "le Volume IV détaille..." → Data lakehouse patterns
-- "le Volume V explore..." → Human skills and development practices
+Use these French patterns when referencing other volumes:
+
+| Pattern | Target |
+|---------|--------|
+| "comme défini au Volume I…" | Conceptual foundations |
+| "voir Volume II pour l'implémentation…" | Confluent + GCP implementation |
+| "le Volume III approfondit…" | Kafka architecture details |
+| "le Volume IV détaille…" | Data lakehouse patterns |
+| "le Volume V explore…" | Human skills & practices |
